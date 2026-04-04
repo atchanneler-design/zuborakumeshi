@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 // APIキーの確認（サーバーサイドで実行されるため process.env を参照）
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
 
-const SYSTEM_PROMPT = `あなたは冷蔵庫の写真から食材を読み取るアシスタントです。
+const SYSTEM_PROMPT = `あなたは冷蔵庫の写真から食材を読み取るアシスタント「ズボラクめし」の実働AIです。
 画像を見て、含まれる食材・食品のリストをJSONのみで返してください。
 挨拶文・説明文は一切不要です。以下の形式で返してください：
 [{"name":"食材名","amount":"数値（不明なら1）","unit":"単位（個、g、本、枚、ml、1パック、等。不明なら「個」）"}]`;

@@ -5,20 +5,20 @@ export default function Home() {
     <div className="min-h-screen bg-orange-50 flex flex-col items-center justify-center p-6">
       <div className="max-w-sm w-full text-center">
         <div className="text-6xl mb-4">🍳</div>
-        <h1 className="text-4xl font-extrabold text-orange-600 mb-2 tracking-tight">
-          パシャめし
+        <h1 className="text-4xl font-extrabold text-accent mb-2 tracking-tighter italic">
+          ズボラクめし
         </h1>
-        <p className="text-gray-500 text-sm mb-8 leading-relaxed">
+        <p className="text-gray-400 text-xs mb-8 leading-relaxed font-medium">
           冷蔵庫をパシャっと撮るだけ。<br/>
-          今ある食材と調味料で、今日のご飯を決めよう。
+          残り物だけで、爆速で今夜の献立を決めよう。
         </p>
 
         <div className="flex flex-col gap-4">
           <Link
             href="/fridge"
-            className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-5 rounded-2xl text-lg shadow-md flex items-center justify-center gap-2"
+            className="bg-accent hover:bg-accent/90 text-white font-black py-5 rounded-[2rem] text-lg shadow-xl shadow-accent/20 flex items-center justify-center gap-2 active:scale-95 transition-all"
           >
-            <span>🧊</span> 冷蔵庫を撮る
+            <span>📸</span> 撮影して決める
           </Link>
           <Link
             href="/fridge"

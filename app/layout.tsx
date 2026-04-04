@@ -21,17 +21,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "パシャめし",
-  description: "冷蔵庫をパシャっと撮るだけで、今ある食材と調味料で作れるレシピを提案。買い出し不要。",
+  title: "ズボラクめし",
+  description: "冷蔵庫をパシャっと撮るだけで、爆速で今夜の献立を決める。ズボラのための最強キッチンツール。",
   openGraph: {
-    title: "パシャめし",
-    description: "冷蔵庫を撮るだけで今日のご飯が決まる",
+    title: "ズボラクめし",
+    description: "冷蔵庫を撮るだけで爆速で今日のご飯が決まる",
     images: [{ url: "/api/og", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "パシャめし",
-    description: "冷蔵庫を撮るだけで今日のご飯が決まる",
+    title: "ズボラクめし",
+    description: "冷蔵庫を撮るだけで爆速で今日のご飯が決まる",
     images: ["/api/og"],
   },
 };
