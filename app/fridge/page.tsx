@@ -7,6 +7,21 @@ import { resizeImage } from "@/lib/resizeImage";
 import { getDefaultUnit, QUANTITY_OPTIONS } from "@/lib/ingredientUtils";
 import type { Ingredient, ServingSize } from "@/lib/types";
 
+const CATEGORIES = [
+  { label: "🥩 肉", key: "肉", items: ["豚肉", "鶏肉", "牛肉", "ひき肉", "ハム", "ベーコン"] },
+  { label: "🥕 野菜", key: "野菜", items: ["玉ねぎ", "人参", "じゃがいも", "キャベツ", "ピーマン", "ナス", "大根", "トマト", "もやし", "ブロッコリー"] },
+  { label: "🐟 魚", key: "魚", items: ["鮭", "さば", "ツナ缶"] },
+  { label: "🥚 卵乳", key: "卵乳", items: ["卵", "牛乳", "チーズ", "豆腐", "納豆"] },
+  { label: "🍞 主食", key: "主食", items: ["ごはん", "食パン", "うどん", "パスタ", "餅"] },
+  { label: "🍄 茸", key: "茸", items: ["しめじ", "えのき", "椎茸", "舞茸"] },
+] as const;
+
+const DISH_MENU = [
+  { id: "main", label: "主菜", icon: "🥩" },
+  { id: "side", label: "副菜", icon: "🥗" },
+  { id: "soup", label: "汁物", icon: "🥣" },
+] as const;
+
 export default function FridgePage() {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -68,20 +83,6 @@ export default function FridgePage() {
     }
   }
 
-  const CATEGORIES = [
-    { label: "🥩 肉", key: "肉", items: ["豚肉", "鶏肉", "牛肉", "ひき肉", "ハム", "ベーコン"] },
-    { label: "🥕 野菜", key: "野菜", items: ["玉ねぎ", "人参", "じゃがいも", "キャベツ", "ピーマン", "ナス", "大根", "トマト", "もやし", "ブロッコリー"] },
-    { label: "🐟 魚", key: "魚", items: ["鮭", "さば", "ツナ缶"] },
-    { label: "🥚 卵乳", key: "卵乳", items: ["卵", "牛乳", "チーズ", "豆腐", "納豆"] },
-    { label: "🍞 主食", key: "主食", items: ["ごはん", "食パン", "うどん", "パスタ", "餅"] },
-    { label: "🍄 茸", key: "茸", items: ["しめじ", "えのき", "椎茸", "舞茸"] },
-  ];
-
-  const dishMenu = [
-    { id: "main", label: "主菜", icon: "🥩" },
-    { id: "side", label: "副菜", icon: "🥗" },
-    { id: "soup", label: "汁物", icon: "🥣" },
-  ] as const;
 
   return (
     <div className="min-h-screen bg-background text-foreground max-w-lg mx-auto relative overflow-x-hidden pb-32">
@@ -102,7 +103,7 @@ export default function FridgePage() {
         <section className="space-y-3">
           <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">作るものを選ぶ</h2>
           <div className="flex gap-2">
-            {dishMenu.map((m) => (
+            {DISH_MENU.map((m) => (
               <button
                 key={m.id}
                 onClick={() => toggleDishType(m.id)}

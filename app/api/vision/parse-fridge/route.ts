@@ -1,8 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 
-// APIキーの確認（サーバーサイドで実行されるため process.env を参照）
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? "");
 
 const SYSTEM_PROMPT = `あなたは冷蔵庫の写真から食材を読み取るアシスタント「ズボラクめし」の実働AIです。
 画像を見て、含まれる食材・食品のリストをJSONのみで返してください。
@@ -12,12 +11,16 @@ const SYSTEM_PROMPT = `あなたは冷蔵庫の写真から食材を読み取る
 export async function POST(req: NextRequest) {
   const { imageBase64s }: { imageBase64s: string[] } = await req.json();
 
+  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    return NextResponse.json({ error: "Vision API key is not configured" }, { status: 500 });
+  }
+
   if (!imageBase64s || imageBase64s.length === 0) {
     return NextResponse.json({ error: "画像データが必要です" }, { status: 400 });
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
 
     const imageParts = imageBase64s.map((base64) => {
       const [header, data] = base64.split(",");

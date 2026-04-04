@@ -47,6 +47,10 @@ export async function POST(req: NextRequest) {
     dishTypes: string[];
   } = await req.json();
 
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return NextResponse.json({ error: "Recipe API key is not configured" }, { status: 500 });
+  }
+
   if (!ingredients || ingredients.length === 0) {
     return NextResponse.json({ error: "食材リストが空です" }, { status: 400 });
   }
@@ -62,21 +66,26 @@ export async function POST(req: NextRequest) {
 
   const menuRequestText = `主菜: 5品${dishTypes.includes("side") ? "、副菜: 3品" : ""}${dishTypes.includes("soup") ? "、汁物: 3品" : ""}`;
 
-  const message = await client.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 4000,
-    system: SYSTEM_PROMPT,
-    messages: [
-      {
-        role: "user",
-        content: `【提案依頼】: ${menuRequestText}\n【人数・ボリューム】: ${servingSize}\n【利用可能な食材】:\n${ingredientText}\n\n【利用可能な調味料】:\n${seasoningText}\n\n上記設定に合わせて、各カテゴリのレシピ案を提案してください。`,
-      },
-    ],
-  });
+  try {
+    const message = await client.messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 4000,
+      system: SYSTEM_PROMPT,
+      messages: [
+        {
+          role: "user",
+          content: `【提案依頼】: ${menuRequestText}\n【人数・ボリューム】: ${servingSize}\n【利用可能な食材】:\n${ingredientText}\n\n【利用可能な調味料】:\n${seasoningText}\n\n上記設定に合わせて、各カテゴリのレシピ案を提案してください。`,
+        },
+      ],
+    });
 
-  const raw = message.content[0].type === "text" ? message.content[0].text : "{}";
-  const jsonMatch = raw.match(/\{[\s\S]*\}/);
-  const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : { main: [], side: [], soup: [] };
+    const raw = message.content[0].type === "text" ? message.content[0].text : "{}";
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : { main: [], side: [], soup: [] };
 
-  return NextResponse.json(parsed);
+    return NextResponse.json(parsed);
+  } catch (error) {
+    console.error("Claude API Error:", error);
+    return NextResponse.json({ error: "レシピの生成に失敗しました" }, { status: 500 });
+  }
 }
