@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useFridgeStore } from "@/store/fridgeStore";
 import { resizeImage } from "@/lib/resizeImage";
 import { getDefaultUnit, QUANTITY_OPTIONS } from "@/lib/ingredientUtils";
-import type { Ingredient } from "@/lib/types";
+import type { Ingredient, ServingSize } from "@/lib/types";
 
 export default function FridgePage() {
   const router = useRouter();
@@ -51,7 +51,7 @@ export default function FridgePage() {
       if (!res.ok) throw new Error(data.error ?? "解析失敗");
 
       const newItems: Ingredient[] = data.ingredients.map(
-        (i: any) => ({
+        (i: { name: string; amount?: number | string; unit?: string }) => ({
           id: crypto.randomUUID(),
           name: i.name,
           amount: i.amount || 1,
@@ -126,7 +126,7 @@ export default function FridgePage() {
             {["少なめ", "標準", "2人前", "3〜4人", "ﾊﾟｰﾃｨ"].map((size) => (
               <button
                 key={size}
-                onClick={() => setServingSize(size as any)}
+                onClick={() => setServingSize(size as ServingSize)}
                 className={`flex-1 py-2 text-[11px] font-black rounded-xl transition-all ${
                   servingSize === size ? "bg-white text-accent shadow-sm" : "text-gray-400"
                 }`}

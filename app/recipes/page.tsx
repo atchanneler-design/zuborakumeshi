@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFridgeStore } from "@/store/fridgeStore";
-import type { Recipe, RecipeResponse } from "@/lib/types";
+import type { RecipeResponse } from "@/lib/types";
 
 export default function RecipesPage() {
   const router = useRouter();
@@ -34,7 +34,7 @@ export default function RecipesPage() {
   useEffect(() => {
     if (recipeData && !dishTypes.includes(activeTab)) {
       const available = dishTypes.find(t => t === "main" || t === "side" || t === "soup");
-      if (available) setActiveTab(available as any);
+      if (available) setActiveTab(available as "main" | "side" | "soup");
     }
   }, [recipeData, dishTypes, activeTab]);
 
@@ -97,10 +97,10 @@ export default function RecipesPage() {
         {/* タブUI */}
         {dishTypes.length > 0 && (
           <nav className="flex gap-2 bg-gray-100 p-1 rounded-2xl">
-            {tabs.map((tab) => dishTypes.includes(tab.id as any) && (
+            {tabs.map((tab) => dishTypes.includes(tab.id) && (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 flex flex-col items-center py-2 transition-all rounded-xl ${
                   activeTab === tab.id 
                     ? "bg-white shadow-sm text-accent" 

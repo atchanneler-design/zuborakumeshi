@@ -21,6 +21,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000"
+  ),
   title: "ズボラクめし",
   description: "冷蔵庫をパシャっと撮るだけで、爆速で今夜の献立を決める。ズボラのための最強キッチンツール。",
   openGraph: {

@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
-import type { Ingredient } from "@/lib/types";
+import type { Ingredient, Seasoning } from "@/lib/types";
 
 const client = new Anthropic();
 
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
   const { ingredients, servingSize, seasonings, dishTypes }: { 
     ingredients: Ingredient[]; 
     servingSize: string; 
-    seasonings: any[];
+    seasonings: Seasoning[];
     dishTypes: string[];
   } = await req.json();
 
