@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFridgeStore } from "@/store/fridgeStore";
 import { resizeImage } from "@/lib/resizeImage";
@@ -46,6 +46,14 @@ export default function FridgePage() {
   const [pendingImages, setPendingImages] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [showSeasonings, setShowSeasonings] = useState(false);
+  const [remaining, setRemaining] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch("/api/remaining")
+      .then((r) => r.json())
+      .then((d) => setRemaining(d.remaining))
+      .catch(() => {/* サイレントに失敗 */});
+  }, []);
 
   async function handleImage(file: File) {
     const base64 = await resizeImage(file);
@@ -365,6 +373,13 @@ export default function FridgePage() {
       {/* フローティングボタン */}
       {ingredients.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 p-6 z-40 bg-gradient-to-t from-background via-background to-transparent pt-12 pointer-events-none">
+          {remaining !== null && (
+            <p className="text-center text-[10px] font-black text-gray-400 mb-2 pointer-events-none">
+              {remaining === 0
+                ? "本日の無料利用回数を使い切りました"
+                : `本日あと${remaining}回`}
+            </p>
+          )}
           <button
             onClick={() => router.push("/recipes")}
             className="w-full bg-accent text-white font-black py-5 rounded-[2rem] text-base shadow-2xl shadow-accent/30 active:scale-[0.98] transition-all pointer-events-auto flex items-center justify-center gap-2"

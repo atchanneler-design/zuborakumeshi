@@ -1,6 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
 import type { Ingredient, Seasoning } from "@/lib/types";
+import { checkLimit } from "@/lib/rate-limit";
+import { getClientIP } from "@/lib/get-ip";
 
 const client = new Anthropic();
 
@@ -51,6 +53,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Recipe API key is not configured" }, { status: 500 });
   }
 
+  const ip = getClientIP(req);
+  const { allowed, remaining } = await checkLimit(ip);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "RATE_LIMIT_EXCEEDED", remaining: 0 },
+      { status: 429 }
+    );
+  }
+
   if (!ingredients || ingredients.length === 0) {
     return NextResponse.json({ error: "食材リストが空です" }, { status: 400 });
   }
@@ -83,7 +94,7 @@ export async function POST(req: NextRequest) {
     const jsonMatch = raw.match(/\{[\s\S]*\}/);
     const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : { main: [], side: [], soup: [] };
 
-    return NextResponse.json(parsed);
+    return NextResponse.json({ ...parsed, remaining });
   } catch (error) {
     console.error("Claude API Error:", error);
     return NextResponse.json({ error: "レシピの生成に失敗しました" }, { status: 500 });

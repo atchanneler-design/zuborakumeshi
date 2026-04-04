@@ -27,4 +27,5 @@ export type RecipeResponse = {
   main: Recipe[];
   side: Recipe[];
   soup: Recipe[];
+  remaining?: number;
 };
