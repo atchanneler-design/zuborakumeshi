@@ -26,6 +26,7 @@ export default function FridgePage() {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const [scanning, setScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState({ current: 0, total: 0 });
   const [error, setError] = useState("");
 
   const { 
@@ -63,31 +64,44 @@ export default function FridgePage() {
   async function startScan() {
     if (pendingImages.length === 0) return;
     setScanning(true);
+    setScanProgress({ current: 0, total: pendingImages.length });
     setError("");
-    try {
-      const res = await fetch("/api/vision/parse-fridge", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBase64s: pendingImages }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "解析失敗");
+    
+    let allNewItems: Ingredient[] = [];
 
-      const newItems: Ingredient[] = data.ingredients.map(
-        (i: { name: string; amount?: number | string; unit?: string }) => ({
-          id: crypto.randomUUID(),
-          name: i.name,
-          amount: i.amount || 1,
-          unit: getDefaultUnit(i.name),
-          priority: false,
-        })
-      );
-      setIngredients([...ingredients, ...newItems]);
+    try {
+      for (let i = 0; i < pendingImages.length; i++) {
+        setScanProgress({ current: i + 1, total: pendingImages.length });
+        
+        const res = await fetch("/api/vision/parse-fridge", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageBase64s: [pendingImages[i]] }),
+        });
+        
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error ?? "解析失敗");
+
+        const items: Ingredient[] = data.ingredients.map(
+          (item: { name: string; amount?: number | string; unit?: string }) => ({
+            id: crypto.randomUUID(),
+            name: item.name,
+            amount: item.amount || 1,
+            unit: getDefaultUnit(item.name),
+            priority: false,
+          })
+        );
+        
+        allNewItems = [...allNewItems, ...items];
+        // 1枚ごとにリストを更新して反映させる
+        setIngredients([...ingredients, ...allNewItems]);
+      }
       setPendingImages([]);
     } catch (e) {
       setError(e instanceof Error ? e.message : "エラーが発生しました");
     } finally {
       setScanning(false);
+      setScanProgress({ current: 0, total: 0 });
     }
   }
 
@@ -198,9 +212,20 @@ export default function FridgePage() {
             <button
               onClick={startScan}
               disabled={scanning}
-              className="w-full bg-foreground text-background font-black py-4 rounded-2xl shadow-xl disabled:opacity-30 text-sm active:scale-[0.98] transition-all"
+              className="w-full bg-foreground text-background font-black py-4 rounded-2xl shadow-xl disabled:opacity-30 text-sm active:scale-[0.98] transition-all relative overflow-hidden"
             >
-              {scanning ? "解析中..." : `${pendingImages.length}枚を読み取る`}
+              <div className="relative z-10">
+                {scanning 
+                  ? `${scanProgress.current}/${scanProgress.total}枚目を読み取り中...` 
+                  : `${pendingImages.length}枚を読み取る`
+                }
+              </div>
+              {scanning && (
+                <div 
+                  className="absolute inset-0 bg-accent/20 transition-all duration-500 ease-out origin-left"
+                  style={{ width: `${(scanProgress.current / scanProgress.total) * 100}%` }}
+                />
+              )}
             </button>
           )}
 

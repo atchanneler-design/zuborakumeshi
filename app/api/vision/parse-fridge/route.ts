@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const imageParts = imageBase64s.map((base64) => {
       const [header, data] = base64.split(",");
@@ -36,16 +36,22 @@ export async function POST(req: NextRequest) {
     const result = await model.generateContent([
       SYSTEM_PROMPT,
       ...imageParts,
-      "これら冷蔵庫の中（各段、野菜室、ドアポケット、冷凍庫など）を解析し、入っている食材・調味料・食品の名前、大体の量、単位をリストアップしてください。"
+      "これら冷蔵庫の中を解析し、入っている食材・食品をリストアップしてください。"
     ]);
 
     const raw = result.response.text();
+    // より堅牢なJSON抽出
     const jsonMatch = raw.match(/\[[\s\S]*\]/);
-    const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
-
+    if (!jsonMatch) {
+      console.error("No JSON found in response:", raw);
+      throw new Error("解析結果の形式が正しくありません");
+    }
+    
+    const parsed = JSON.parse(jsonMatch[0]);
     return NextResponse.json({ ingredients: parsed });
   } catch (error) {
-    console.error("Gemini API Error:", error);
-    return NextResponse.json({ error: "画像解析に失敗しました" }, { status: 500 });
+    console.error("Vision Analyze Error:", error);
+    const message = error instanceof Error ? error.message : "画像解析に失敗しました";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
