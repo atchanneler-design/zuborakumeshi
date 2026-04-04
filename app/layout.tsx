@@ -28,17 +28,26 @@ export const metadata: Metadata = {
       ? `https://${process.env.VERCEL_URL}`
       : "http://localhost:3000"
   ),
-  title: "ズボラクめし",
-  description: "冷蔵庫をパシャっと撮るだけで、爆速で今夜の献立を決める。ズボラのための最強キッチンツール。",
+  title: {
+    default: "ズボラクめし | 冷蔵庫をパシャっと撮るだけ献立提案AI",
+    template: "%s | ズボラクめし",
+  },
+  description: "冷蔵庫をパシャっと撮るだけで、爆速で今夜の献立を決める。ズボラのための最強キッチンツール（献立提案AI）。買い出し不要、洗い物少なめレシピをご提案。",
+  keywords: ["献立", "レシピ", "AI", "冷蔵庫", "ズボラ", "時短料理", "洗い物少なめ", "パシャめし", "ズボラクめし"],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "ズボラクめし",
-    description: "冷蔵庫を撮るだけで爆速で今日のご飯が決まる",
+    description: "冷蔵庫を撮るだけで爆速で今日のご飯が決まる。ズボラのための献立AI。",
     images: [{ url: "/api/og", width: 1200, height: 630 }],
+    locale: "ja_JP",
+    type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "ズボラクめし",
-    description: "冷蔵庫を撮るだけで今日のご飯が決まる",
+    description: "冷蔵庫を撮るだけで爆速で今日のご飯が決まる。ズボラのための献立AI。",
     images: ["/api/og"],
   },
 };
