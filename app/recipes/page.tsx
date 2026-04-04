@@ -85,19 +85,31 @@ export default function RecipesPage() {
   return (
     <div className="min-h-screen bg-background max-w-lg mx-auto pb-40 flex flex-col">
       {/* プレミアム・固定ヘッダー */}
-      <header className="sticky top-0 bg-background/90 backdrop-blur-md z-40 p-6 space-y-6">
+      <header className="sticky top-0 bg-background/90 backdrop-blur-md z-40 px-6 py-8 space-y-6">
         <div className="flex items-center justify-between">
-          <button onClick={() => router.push("/fridge")} className="w-10 h-10 rounded-full bg-white border border-border flex items-center justify-center text-gray-400 shadow-sm active:scale-90 transition-transform">
-            ←
-          </button>
-          <h1 className="text-xl font-black text-gray-900 tracking-tighter">ズボラクレシピ提案</h1>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => router.push("/")}
+              className="w-10 h-10 rounded-full bg-white border border-border flex items-center justify-center text-gray-400 shadow-sm active:scale-90 transition-transform"
+            >
+              ←
+            </button>
+            <div>
+              <h1 className="text-xl font-black text-gray-900 tracking-tighter italic cursor-pointer" onClick={() => router.push("/")}>
+                ズボラクめし
+              </h1>
+              <p className="text-[9px] font-black text-accent/60 uppercase tracking-widest">
+                AI Proposals
+              </p>
+            </div>
+          </div>
           <div className="w-10" /> {/* Spacer */}
         </div>
 
         {/* タブUI */}
-        {dishTypes.length > 0 && (
+        {dishTypes.length > 1 && (
           <nav className="flex gap-2 bg-gray-100 p-1 rounded-2xl">
-            {tabs.map((tab) => dishTypes.includes(tab.id) && (
+            {tabs.map((tab) => dishTypes.includes(tab.id as "main" | "side" | "soup") && (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
@@ -134,11 +146,11 @@ export default function RecipesPage() {
             currentRecipes.map((recipe, idx) => (
               <article
                 key={idx}
-                className="bg-white rounded-[2.5rem] p-8 soft-shadow border border-border relative overflow-hidden group transition-all"
+                className="premium-card p-8 relative overflow-hidden group transition-all"
               >
                 <div className="flex flex-wrap gap-2 mb-4">
                   {recipe.tags.map(tag => (
-                    <span key={tag} className="bg-gray-50 text-gray-400 text-[9px] font-black px-2.5 py-1 rounded-full border border-border tracking-wider">
+                    <span key={tag} className="bg-orange-50 text-accent text-[9px] font-black px-2.5 py-1 rounded-full border border-accent/10 tracking-wider">
                       {tag}
                     </span>
                   ))}
@@ -147,12 +159,12 @@ export default function RecipesPage() {
                 <h3 className="text-xl font-black text-gray-900 mb-2 leading-tight tracking-tighter italic">{recipe.title}</h3>
                 <p className="text-xs text-gray-400 mb-6 leading-relaxed font-medium">{recipe.description}</p>
 
-                <div className="bg-gray-50/50 rounded-[1.6rem] p-6 mb-8 border border-border/50">
-                  <ol className="space-y-3">
+                <div className="bg-white/50 rounded-[1.6rem] p-6 mb-8 border border-white/80">
+                  <ol className="space-y-4">
                     {recipe.steps.map((step, sIdx) => (
                       <li key={sIdx} className="flex gap-4">
-                        <span className="flex-none w-5 h-5 rounded-full bg-white border border-border flex items-center justify-center text-[9px] font-black text-gray-400 shadow-sm">{sIdx + 1}</span>
-                        <p className="text-[12px] text-gray-700 font-bold leading-snug">{step}</p>
+                        <span className="flex-none w-5 h-5 rounded-full bg-accent text-white flex items-center justify-center text-[9px] font-black shadow-lg shadow-accent/20">{sIdx + 1}</span>
+                        <p className="text-[12px] text-gray-800 font-bold leading-snug">{step}</p>
                       </li>
                     ))}
                   </ol>
@@ -195,7 +207,7 @@ export default function RecipesPage() {
         ) : (
           <button
             onClick={() => {
-              router.push("/fridge");
+              router.push("/");
             }}
             className="w-full bg-foreground text-background font-black py-5 rounded-[2rem] text-base shadow-xl active:scale-[0.98] transition-all pointer-events-auto flex items-center justify-center gap-2"
           >

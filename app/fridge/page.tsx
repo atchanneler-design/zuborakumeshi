@@ -87,18 +87,33 @@ export default function FridgePage() {
   return (
     <div className="min-h-screen bg-background text-foreground max-w-lg mx-auto relative overflow-x-hidden pb-32">
       {/* ヘッダー */}
-      <header className="p-6 flex items-center justify-between sticky top-0 bg-background/80 backdrop-blur-md z-30">
-        <h1 className="text-2xl font-black tracking-tighter text-accent">ズボラクめし</h1>
+      <header className="px-6 py-8 flex items-center justify-between sticky top-0 bg-background/80 backdrop-blur-md z-30">
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => router.push("/")}
+            className="w-10 h-10 rounded-full bg-white border border-border flex items-center justify-center text-gray-400 shadow-sm active:scale-90 transition-transform"
+          >
+            ←
+          </button>
+          <div>
+            <h1 className="text-xl font-black text-gray-900 tracking-tighter italic cursor-pointer" onClick={() => router.push("/")}>
+              ズボラクめし
+            </h1>
+            <p className="text-[9px] font-black text-accent/60 uppercase tracking-widest">
+              Fridge Inventory
+            </p>
+          </div>
+        </div>
         <button 
           onClick={() => setShowSeasonings(true)}
-          className="bg-white px-4 py-2 rounded-full shadow-sm border border-border text-[11px] font-black active:scale-90 transition-transform flex items-center gap-1.5"
+          className="bg-white px-4 py-2 rounded-full shadow-sm border border-border text-[10px] font-black active:scale-90 transition-transform flex items-center gap-1.5"
         >
           <span>🧂</span>
-          <span>調味料リスト</span>
+          <span>調味料</span>
         </button>
       </header>
 
-      <main className="px-5 space-y-8">
+      <main className="px-6 space-y-10">
         {/* 作るものを選ぶ */}
         <section className="space-y-3">
           <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">作るものを選ぶ</h2>
