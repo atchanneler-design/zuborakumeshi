@@ -1,7 +1,8 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 
-const client = new Anthropic();
+// APIキーの確認（サーバーサイドで実行されるため process.env を参照）
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
 
 const SYSTEM_PROMPT = `あなたは冷蔵庫の写真から食材を読み取るアシスタントです。
 画像を見て、含まれる食材・食品のリストをJSONのみで返してください。
@@ -12,37 +13,36 @@ export async function POST(req: NextRequest) {
   const { imageBase64s }: { imageBase64s: string[] } = await req.json();
 
   if (!imageBase64s || imageBase64s.length === 0) {
-    return NextResponse.json({ error: "imageBase64s is required" }, { status: 400 });
+    return NextResponse.json({ error: "画像データが必要です" }, { status: 400 });
   }
 
-  const content: any[] = [
-    { type: "text", text: "これらの画像（冷蔵庫の各段、野菜室、冷凍庫など）に含まれる食材をJSONで名出ししてください。" },
-  ];
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  for (const base64 of imageBase64s) {
-    const [header, data] = base64.split(",");
-    const mediaType = header.match(/:(.*?);/)?.[1] as any;
-    content.push({
-      type: "image",
-      source: { type: "base64", media_type: mediaType ?? "image/jpeg", data },
+    const imageParts = imageBase64s.map((base64) => {
+      const [header, data] = base64.split(",");
+      const mimeType = header.match(/:(.*?);/)?.[1] || "image/jpeg";
+      return {
+        inlineData: {
+          data,
+          mimeType,
+        },
+      };
     });
+
+    const result = await model.generateContent([
+      SYSTEM_PROMPT,
+      ...imageParts,
+      "これら冷蔵庫の中（各段、野菜室、ドアポケット、冷凍庫など）を解析し、入っている食材・調味料・食品の名前、大体の量、単位をリストアップしてください。"
+    ]);
+
+    const raw = result.response.text();
+    const jsonMatch = raw.match(/\[[\s\S]*\]/);
+    const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
+
+    return NextResponse.json({ ingredients: parsed });
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    return NextResponse.json({ error: "画像解析に失敗しました" }, { status: 500 });
   }
-
-  const message = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 1536,
-    system: SYSTEM_PROMPT,
-    messages: [
-      {
-        role: "user",
-        content,
-      },
-    ],
-  });
-
-  const raw = message.content[0].type === "text" ? message.content[0].text : "[]";
-  const jsonMatch = raw.match(/\[[\s\S]*\]/);
-  const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
-
-  return NextResponse.json({ ingredients: parsed });
 }
