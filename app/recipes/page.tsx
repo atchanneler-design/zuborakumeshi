@@ -49,8 +49,12 @@ export default function RecipesPage() {
   async function claimBonus() {
     setBonusClaiming(true);
     try {
-      const r = await fetch("/api/bonus", { method: "POST" });
-      const data = await r.json();
+      const response = await fetch("/api/bonus", { 
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model: "claude-3-5-haiku-20241022" })
+      });
+      const data = await response.json();
       if (data.success) setBonusGranted(true);
     } finally {
       setBonusClaiming(false);
@@ -150,7 +154,9 @@ export default function RecipesPage() {
             </div>
           </div>
           {recipeData?.remaining !== undefined && (
-            <span className="text-[10px] font-black text-gray-400">本日あと{recipeData.remaining}回</span>
+            <div className="glass-pill px-3 py-1 text-[9px] font-black text-gray-400">
+              本日あと{recipeData.remaining}回
+            </div>
           )}
         </div>
         {dishTypes.length > 1 && (
@@ -175,20 +181,22 @@ export default function RecipesPage() {
             <div className="text-center py-12 text-gray-300 italic text-sm">提案された{tabs.find(t => t.id === activeTab)?.label}はありません</div>
           ) : (
             currentRecipes.map((recipe, idx) => (
-              <article key={idx} className="bg-white rounded-[2.5rem] p-8 soft-shadow border border-border relative overflow-hidden">
+              <article key={idx} className="premium-card p-8 relative overflow-hidden transition-all">
                 <div className="flex flex-wrap gap-2 mb-4">
                   {recipe.tags.map(tag => (
-                    <span key={tag} className="bg-gray-50 text-gray-400 text-[9px] font-black px-2.5 py-1 rounded-full border border-border tracking-wider">{tag}</span>
+                    <span key={tag} className="bg-orange-50 text-accent text-[9px] font-black px-2.5 py-1 rounded-full border border-accent/10 tracking-wider">
+                      {tag}
+                    </span>
                   ))}
                 </div>
                 <h3 className="text-xl font-black text-gray-900 mb-2 leading-tight tracking-tighter italic">{recipe.title}</h3>
                 <p className="text-xs text-gray-400 mb-6 leading-relaxed font-medium">{recipe.description}</p>
-                <div className="bg-gray-50/50 rounded-[1.6rem] p-6 mb-8 border border-border/50">
-                  <ol className="space-y-3">
+                <div className="bg-white/50 rounded-[1.6rem] p-6 mb-8 border border-white/80">
+                  <ol className="space-y-4">
                     {recipe.steps.map((step, sIdx) => (
                       <li key={sIdx} className="flex gap-4">
-                        <span className="flex-none w-5 h-5 rounded-full bg-white border border-border flex items-center justify-center text-[9px] font-black text-gray-400 shadow-sm">{sIdx + 1}</span>
-                        <p className="text-[12px] text-gray-700 font-bold leading-snug">{step}</p>
+                        <span className="flex-none w-5 h-5 rounded-full bg-accent text-white flex items-center justify-center text-[9px] font-black shadow-lg shadow-accent/20">{sIdx + 1}</span>
+                        <p className="text-[12px] text-gray-800 font-bold leading-snug">{step}</p>
                       </li>
                     ))}
                   </ol>

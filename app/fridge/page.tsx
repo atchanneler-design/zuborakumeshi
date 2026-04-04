@@ -374,11 +374,13 @@ export default function FridgePage() {
       {ingredients.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 p-6 z-40 bg-gradient-to-t from-background via-background to-transparent pt-12 pointer-events-none">
           {remaining !== null && (
-            <p className="text-center text-[10px] font-black text-gray-400 mb-2 pointer-events-none">
-              {remaining === 0
-                ? "本日の無料利用回数を使い切りました"
-                : `本日あと${remaining}回`}
-            </p>
+            <div className="flex justify-center mb-3">
+              <div className="glass-pill px-4 py-1.5 text-[10px] font-black text-gray-400 pointer-events-none">
+                {remaining === 0
+                  ? "本日の無料利用回数を使い切りました"
+                  : `本日あと ${remaining} 回`}
+              </div>
+            </div>
           )}
           <button
             onClick={() => router.push("/recipes")}
