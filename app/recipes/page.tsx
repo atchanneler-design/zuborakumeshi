@@ -110,9 +110,6 @@ export default function RecipesPage() {
             {LOADING_MESSAGES[loadingMsgIdx]}
           </p>
         </div>
-        <p className="text-gray-400 text-[10px] font-medium mt-8 opacity-60">
-          洗い物少なめ、手順が簡単な<br/>最適な提案を抽出しています。
-        </p>
       </div>
     );
   }
