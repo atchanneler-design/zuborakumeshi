@@ -330,9 +330,6 @@ export default function FridgePage() {
                         <option key={opt} value={opt}>{opt}</option>
                       ))}
                     </select>
-                    <span className="text-[10px] font-black text-gray-400 border-l border-gray-200 pl-1.5 overflow-hidden whitespace-nowrap">
-                      {item.unit}
-                    </span>
                   </div>
                   <button
                     onClick={() => removeIngredient(item.id)}

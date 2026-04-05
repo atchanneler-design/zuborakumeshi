@@ -7,6 +7,15 @@ import type { RecipeResponse } from "@/lib/types";
 import { getRandomComparison } from "@/lib/savingsUtils";
 import { useHasHydrated } from "@/lib/useHasHydrated";
 
+const LOADING_MESSAGES = [
+  "AIも、今布団から出て考えています…",
+  "「洗い物したくない」というあなたの深層心理を解析中…",
+  "だいたい10秒くらいで終わります、知らんけど。",
+  "なるべくフライパンを使わない方向で調整しています…",
+  "「買い物に行く気力」を再起動中…",
+  "「今日のご飯、何でもいい」という嘘を見抜いています…"
+];
+
 export default function RecipesPage() {
   const router = useRouter();
   const hasHydrated = useHasHydrated();
@@ -15,6 +24,7 @@ export default function RecipesPage() {
   const [savingsInfo, setSavingsInfo] = useState<{ target: string; savings: number; message: string } | null>(null);
   const [activeTab, setActiveTab] = useState<"main" | "side" | "soup">("main");
   const [loading, setLoading] = useState(true);
+  const [loadingMsgIdx, setLoadingMsgIdx] = useState(0);
   const [error, setError] = useState("");
   const [rateLimited, setRateLimited] = useState(false);
   const [bonusClaiming, setBonusClaiming] = useState(false);
@@ -42,6 +52,15 @@ export default function RecipesPage() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [ingredients, servingSize, seasonings, dishTypes, addSavings]);
+
+  useEffect(() => {
+    if (loading) {
+      const interval = setInterval(() => {
+        setLoadingMsgIdx(prev => (prev + 1) % LOADING_MESSAGES.length);
+      }, 2500);
+      return () => clearInterval(interval);
+    }
+  }, [loading]);
 
   useEffect(() => {
     if (ingredients.length === 0) { router.replace("/fridge"); return; }
@@ -85,7 +104,12 @@ export default function RecipesPage() {
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-12 text-center">
         <div className="text-7xl animate-bounce mb-8">🍳</div>
         <h2 className="text-2xl font-black text-accent mb-3 tracking-tighter">ズボラクレシピを考え中...</h2>
-        <p className="text-gray-400 text-xs font-medium leading-loose max-w-[200px] mx-auto opacity-60">
+        <div className="min-h-[60px] flex flex-col justify-center">
+          <p className="text-gray-900 text-sm font-black leading-relaxed animate-in fade-in slide-in-from-bottom-1 duration-500 key={loadingMsgIdx}">
+            {LOADING_MESSAGES[loadingMsgIdx]}
+          </p>
+        </div>
+        <p className="text-gray-400 text-[10px] font-medium mt-8 opacity-60">
           洗い物少なめ、手順が簡単な<br/>最適な提案を抽出しています。
         </p>
       </div>
@@ -253,7 +277,7 @@ export default function RecipesPage() {
       <div className="fixed bottom-0 left-0 right-0 p-6 z-40 bg-gradient-to-t from-background via-background to-transparent pt-12 pointer-events-none">
         {nextTab ? (
           <button onClick={() => { setActiveTab(nextTab); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="w-full bg-accent text-white font-black py-5 rounded-[2rem] text-base shadow-2xl shadow-accent/30 active:scale-[0.98] transition-all pointer-events-auto flex items-center justify-center gap-2">
-            <span>次（{tabs.find(t => t.id === nextTab)?.label}へ）</span><span className="text-xl">＞</span>
+            <span>次（{tabs.find(t => t.id === nextTab)?.label || ""}へ）</span><span className="text-xl">＞</span>
           </button>
         ) : (
           <button onClick={() => router.push("/fridge")} className="w-full bg-foreground text-background font-black py-5 rounded-[2rem] text-base shadow-xl active:scale-[0.98] transition-all pointer-events-auto flex items-center justify-center gap-2">
