@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useFridgeStore } from "@/store/fridgeStore";
 import { useHasHydrated } from "@/lib/useHasHydrated";
 
 function HPGauge() {
