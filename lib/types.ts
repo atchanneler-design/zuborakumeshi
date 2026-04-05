@@ -15,17 +15,16 @@ export type Ingredient = {
 };
 
 export type Recipe = {
-  title: string;
-  description: string;
+  name: string;
+  method: string;
+  uses_priority?: boolean;
   steps: string[];
-  usedIngredientNames: string[];
-  tags: string[];
-  searchLinks: { label: string; query: string }[];
-  savingsAmount?: number;
-  comparisonTarget?: string;
+  ingredients_used: string[];
+  seasonings_used: string[];
 };
 
 export type RecipeResponse = {
+  note?: string;
   main: Recipe[];
   side: Recipe[];
   soup: Recipe[];

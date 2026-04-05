@@ -213,6 +213,16 @@ export default function RecipesPage() {
           <h2 className="text-2xl font-black text-gray-900 mb-1">{tabs.find(t => t.id === activeTab)?.label}の提案</h2>
           <p className="text-[10px] font-medium text-gray-400 uppercase tracking-[0.2em] italic">{tabs.find(t => t.id === activeTab)?.label}のズボラレシピ</p>
         </div>
+
+        {recipeData?.note && (
+          <div className="mx-2 bg-accent/5 border border-accent/10 rounded-2xl p-4">
+            <p className="text-[10px] font-black text-accent leading-relaxed">
+              💡 AIからの注釈:<br/>
+              {recipeData.note}
+            </p>
+          </div>
+        )}
+
         <div className="space-y-8">
           {currentRecipes.length === 0 ? (
             <div className="text-center py-12 text-gray-300 italic text-sm">提案された{tabs.find(t => t.id === activeTab)?.label}はありません</div>
@@ -220,34 +230,49 @@ export default function RecipesPage() {
             currentRecipes.map((recipe, idx) => (
               <article key={idx} className="premium-card p-8 relative overflow-hidden transition-all">
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {(recipe.tags ?? []).map(tag => (
-                    <span key={tag} className="bg-orange-50 text-accent text-[9px] font-black px-2.5 py-1 rounded-full border border-accent/10 tracking-wider">
-                      {tag}
+                  <span className="bg-orange-50 text-accent text-[9px] font-black px-2.5 py-1 rounded-full border border-accent/10 tracking-wider">
+                    {recipe.method}
+                  </span>
+                  {recipe.uses_priority && (
+                    <span className="bg-accent text-white text-[9px] font-black px-2.5 py-1 rounded-full shadow-sm animate-pulse">
+                      ✨ 限界消費
                     </span>
-                  ))}
+                  )}
                 </div>
-                <h3 className="text-xl font-black text-gray-900 mb-2 leading-tight tracking-tighter italic">{recipe.title}</h3>
-                <p className="text-xs text-gray-400 mb-6 leading-relaxed font-medium">{recipe.description}</p>
-                <div className="bg-white/50 rounded-[1.6rem] p-6 mb-8 border border-white/80">
-                  <ol className="space-y-4">
-                    {(recipe.steps ?? []).map((step, sIdx) => (
-                      <li key={sIdx} className="flex gap-4">
-                        <span className="flex-none w-5 h-5 rounded-full bg-accent text-white flex items-center justify-center text-[9px] font-black shadow-lg shadow-accent/20">{sIdx + 1}</span>
-                        <p className="text-[12px] text-gray-800 font-bold leading-snug">{step}</p>
-                      </li>
+                
+                <h3 className="text-xl font-black text-gray-900 mb-4 leading-tight tracking-tighter italic">
+                  {recipe.name}
+                </h3>
+
+                <div className="mb-6 space-y-3">
+                  <div className="flex flex-wrap gap-1.5">
+                    {recipe.ingredients_used.map(ing => (
+                      <span key={ing} className="text-[9px] font-black text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">
+                        {ing}
+                      </span>
                     ))}
-                  </ol>
+                    {recipe.seasonings_used.map(sea => (
+                      <span key={sea} className="text-[9px] font-black text-gray-400 border border-gray-100 px-2 py-0.5 rounded-md">
+                        {sea}
+                      </span>
+                    ))}
+                  </div>
                 </div>
+
+                <ol className="space-y-4 mb-8">
+                  {recipe.steps.map((step, sIdx) => (
+                    <li key={sIdx} className="flex gap-4 group">
+                      <span className="flex-none w-6 h-6 rounded-full bg-gray-100 text-[10px] font-black flex items-center justify-center text-gray-400 group-hover:bg-accent/10 group-hover:text-accent transition-colors">
+                        {sIdx + 1}
+                      </span>
+                      <p className="text-sm text-gray-700 font-bold leading-relaxed">{step}</p>
+                    </li>
+                  ))}
+                </ol>
+
                 <div className="flex gap-2">
-                  <a 
-                    href={`https://www.google.com/search?q=${encodeURIComponent((recipe.searchLinks ?? [])[0]?.query || recipe.title + " レシピ")}`}
-                    target="_blank" rel="noopener noreferrer" 
-                    className="flex-1 text-center bg-white border border-border text-gray-900 font-black text-[11px] py-4 rounded-2xl active:bg-gray-50 transition-all shadow-sm flex items-center justify-center gap-2"
-                  >
-                    Webで検索 <span>→</span>
-                  </a>
                   <button 
-                    onClick={() => openXShare(recipe.title)}
+                    onClick={() => openXShare(recipe.name)}
                     className="flex-none bg-black text-white px-5 rounded-2xl active:scale-95 transition-all shadow-sm flex items-center justify-center"
                     title="Xにシェア"
                   >
@@ -257,7 +282,7 @@ export default function RecipesPage() {
                 <footer className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span className="text-[8px] font-black text-gray-300 uppercase tracking-widest">食材:</span>
-                    <p className="text-[8px] text-gray-300 font-black truncate max-w-[150px]">{(recipe.usedIngredientNames ?? []).join(" / ")}</p>
+                    <p className="text-[8px] text-gray-300 font-black truncate max-w-[150px]">{(recipe.ingredients_used ?? []).join(" / ")}</p>
                   </div>
                   {savingsInfo && (
                     <div className="receipt-stamp flex flex-col items-center leading-none py-1">
