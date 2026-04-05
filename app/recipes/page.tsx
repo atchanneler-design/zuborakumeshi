@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFridgeStore } from "@/store/fridgeStore";
 import type { RecipeResponse } from "@/lib/types";
-import { getRandomComparison } from "@/lib/savingsUtils";
+import { getTripleComparisons } from "@/lib/savingsUtils";
 import { useHasHydrated } from "@/lib/useHasHydrated";
 
 const LOADING_MESSAGES = [
@@ -21,7 +21,6 @@ export default function RecipesPage() {
   const hasHydrated = useHasHydrated();
   const { ingredients, servingSize, seasonings, dishTypes, addSavings } = useFridgeStore();
   const [recipeData, setRecipeData] = useState<RecipeResponse | null>(null);
-  const [savingsInfo, setSavingsInfo] = useState<{ target: string; savings: number; message: string } | null>(null);
   const [activeTab, setActiveTab] = useState<"main" | "side" | "soup">("main");
   const [loading, setLoading] = useState(true);
   const [loadingMsgIdx, setLoadingMsgIdx] = useState(0);
@@ -45,10 +44,12 @@ export default function RecipesPage() {
         if (!r.ok) throw new Error(data.error || "レシピの生成に失敗しました");
         setRecipeData(data as RecipeResponse);
         
-        // 節約額の計算と記録
-        const info = getRandomComparison(servingSize);
-        setSavingsInfo(info);
-        addSavings(info.savings);
+        // 推定節約額の記録（主菜1品目の最初比較対象を基準にする）
+        const firstRecipe = (data as RecipeResponse).main?.[0];
+        if (firstRecipe) {
+          const comps = getTripleComparisons(firstRecipe.estimated_cost || 200, servingSize);
+          addSavings(comps[0].savings); 
+        }
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -90,12 +91,13 @@ export default function RecipesPage() {
     }
   }
 
-  function openXShare(recipeTitle?: string) {
-    const shareText = recipeTitle 
-      ? `【限界自炊レポ】\n「${recipeTitle}」を作成！\n💰 ${savingsInfo?.target}との差額：+${savingsInfo?.savings.toLocaleString()}円\n今夜の私は叙々苑に行かなかったことで1万円稼いだも同然です。`
-      : "ズボラクめしで資産防衛中！🍳\n冷蔵庫を撮るだけで爆速レシピ提案！";
+  function openXShare(recipeName?: string, targetName?: string, savings?: number) {
+    let shareText = "ズボラクめしで資産防衛中！🍳\n冷蔵庫を撮るだけで爆速レシピ提案！";
+    if (recipeName && targetName && savings !== undefined) {
+      shareText = `【限界自炊レポ】\n「${recipeName}」に挑戦！\n💰 ${targetName}との差額：+${savings.toLocaleString()}円\n今夜の私はこれを作ったことで${targetName}に行かなかったのと同義。実質${savings.toLocaleString()}円の不労所得です。`;
+    }
     
-    const text = encodeURIComponent(`${shareText}\n#ズボラクめし #限界社会人 #実質黒字`);
+    const text = encodeURIComponent(`${shareText}\n#ズボラクめし #限界社会人 #資産防衛`);
     const url = encodeURIComponent(window.location.origin);
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, "_blank");
   }
@@ -272,24 +274,37 @@ export default function RecipesPage() {
 
                 <div className="flex gap-2">
                   <button 
-                    onClick={() => openXShare(recipe.name)}
+                    onClick={() => window.open(`https://www.google.com/search?q=${encodeURIComponent(recipe.name + " レシピ")}`, "_blank")}
+                    className="flex-1 py-3.5 rounded-xl border border-border text-[10px] font-black text-gray-400 hover:bg-gray-50 transition-all flex items-center justify-center gap-1.5"
+                  >
+                    <span>🔍</span> Webで検索
+                  </button>
+                  <button 
+                    onClick={() => {
+                      const comps = getTripleComparisons(recipe.estimated_cost || 200, servingSize);
+                      const bestComp = comps[comps.length - 1]; // 通常、高級フレンチなどが最後にある
+                      openXShare(recipe.name, bestComp.target, bestComp.savings);
+                    }}
                     className="flex-none bg-black text-white px-5 rounded-2xl active:scale-95 transition-all shadow-sm flex items-center justify-center"
                     title="Xにシェア"
                   >
                     <svg className="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.738l7.737-8.84L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                   </button>
                 </div>
-                <footer className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-between gap-2">
+                <footer className="mt-8 pt-6 border-t border-gray-50 flex flex-col gap-4">
                   <div className="flex items-center gap-2">
                     <span className="text-[8px] font-black text-gray-300 uppercase tracking-widest">食材:</span>
-                    <p className="text-[8px] text-gray-300 font-black truncate max-w-[150px]">{(recipe.ingredients_used ?? []).join(" / ")}</p>
+                    <p className="text-[8px] text-gray-300 font-black truncate max-w-full">{(recipe.ingredients_used ?? []).join(" / ")}</p>
                   </div>
-                  {savingsInfo && (
-                    <div className="receipt-stamp flex flex-col items-center leading-none py-1">
-                      <span className="text-[10px] whitespace-nowrap">+{savingsInfo.savings.toLocaleString()}円</span>
-                      <span className="text-[6px] opacity-70 mt-0.5">{savingsInfo.target.split("（")[0]}との差</span>
-                    </div>
-                  )}
+                  
+                  <div className="grid grid-cols-3 gap-2">
+                    {getTripleComparisons(recipe.estimated_cost || 200, servingSize).slice(0, 3).map((comp, cIdx) => (
+                      <div key={cIdx} className="receipt-stamp flex flex-col items-center leading-none py-1.5 bg-gray-50/50 rounded-lg border border-gray-100">
+                        <span className="text-[9px] font-black text-accent mb-0.5">+{comp.savings.toLocaleString()}円</span>
+                        <span className="text-[6px] text-gray-400 scale-90 origin-center whitespace-nowrap">{comp.target.split("（")[0]}比</span>
+                      </div>
+                    ))}
+                  </div>
                 </footer>
               </article>
             ))

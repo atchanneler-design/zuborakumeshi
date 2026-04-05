@@ -12,6 +12,18 @@ const COMPARISON_TARGETS: ComparisonTarget[] = [
   { name: "デパ地下の惣菜盛り合わせ", cost: 3000, message: "贅沢なデザートを追加できる余裕が生まれました。" },
 ];
 
+export function getTripleComparisons(estimatedCost: number, servingSize: "標準" | "多め"): {
+  target: string;
+  savings: number;
+}[] {
+  const multiplier = servingSize === "多め" ? 2 : 1;
+  
+  return COMPARISON_TARGETS.map(t => ({
+    target: t.name + (multiplier > 1 ? "（2食分）" : ""),
+    savings: (t.cost * multiplier) - estimatedCost,
+  }));
+}
+
 export function getRandomComparison(servingSize: "標準" | "多め"): { 
   target: string; 
   savings: number; 

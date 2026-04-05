@@ -55,6 +55,7 @@ const SYSTEM_PROMPT = `あなたは、深夜に帰宅した「限界社会人」
     {
       "name": "料理名",
       "method": "🥘レンジ" | "🍳ワンパン" | "❄️非加熱",
+      "estimated_cost": 推定原価(数値),
       "steps": ["ステップ1", "ステップ2"],
       "ingredients_used": ["食材名"],
       "seasonings_used": ["調味料名"]
@@ -64,6 +65,7 @@ const SYSTEM_PROMPT = `あなたは、深夜に帰宅した「限界社会人」
     {
       "name": "料理名",
       "method": "🥘レンジ" | "🍳ワンパン",
+      "estimated_cost": 推定原価(数値),
       "steps": ["ステップ1", "ステップ2"],
       "ingredients_used": ["食材名"],
       "seasonings_used": ["調味料名"]

@@ -4,20 +4,6 @@ import { useRouter } from "next/navigation";
 import { useFridgeStore } from "@/store/fridgeStore";
 import { useHasHydrated } from "@/lib/useHasHydrated";
 
-function TotalSavingsDisplay() {
-  const { totalSavings } = useFridgeStore();
-  if (totalSavings === 0) return null;
-
-  return (
-    <div className="bg-accent/5 border border-accent/20 px-4 py-3 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-500">
-      <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-xl shadow-inner-soft">💰</div>
-      <div className="text-left">
-        <p className="text-sm font-black text-gray-900 leading-tight">累計節約額：<span className="text-lg">¥{totalSavings.toLocaleString()}</span></p>
-      </div>
-    </div>
-  );
-}
-
 function HPGauge() {
   return (
     <div className="flex flex-col items-end gap-1 scale-75 origin-right">
@@ -82,7 +68,6 @@ export default function LandingPage() {
         </div>
 
         <div className="pt-4 flex flex-col items-center">
-          <TotalSavingsDisplay />
           <button
             onClick={() => router.push("/fridge")}
             className="w-full bg-accent text-white font-black py-6 rounded-[2.5rem] text-lg shadow-2xl shadow-accent/40 active:scale-95 transition-all flex items-center justify-center gap-3 mt-4"

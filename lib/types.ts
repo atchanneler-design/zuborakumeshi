@@ -17,6 +17,7 @@ export type Ingredient = {
 export type Recipe = {
   name: string;
   method: string;
+  estimated_cost: number;
   uses_priority?: boolean;
   steps: string[];
   ingredients_used: string[];
