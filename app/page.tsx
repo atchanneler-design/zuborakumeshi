@@ -68,19 +68,6 @@ export default function LandingPage() {
       
       {/* ヒーローセクション */}
       <section className="text-center space-y-8 pt-4 z-10">
-        <div className="relative inline-block">
-          <div className="relative w-48 h-48 mx-auto grayscale-[0.3] hover:grayscale-0 transition-all duration-700">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
-              src="/futon-person.png" 
-              alt="Genkai Person" 
-              className="w-full h-full object-contain mix-blend-multiply"
-            />
-          </div>
-          <div className="absolute -top-4 -right-4 bg-accent text-white text-[12px] font-black px-4 py-1.5 rounded-full shadow-lg rotate-12 animate-bounce">
-            たすけて
-          </div>
-        </div>
         
         <div className="space-y-4">
           <h1 className="text-4xl font-black text-gray-900 tracking-tighter flex flex-col items-center leading-tight">
