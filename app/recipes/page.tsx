@@ -41,8 +41,9 @@ export default function RecipesPage() {
     })
       .then(async (r) => {
         if (r.status === 429) { setRateLimited(true); return; }
-        const data: RecipeResponse = await r.json();
-        setRecipeData(data);
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || "レシピの生成に失敗しました");
+        setRecipeData(data as RecipeResponse);
         
         // 節約額の計算と記録
         const info = getRandomComparison(servingSize);
@@ -165,7 +166,7 @@ export default function RecipesPage() {
     );
   }
 
-  const currentRecipes = recipeData ? recipeData[activeTab] : [];
+  const currentRecipes = recipeData?.[activeTab] ?? [];
   const tabs = [
     { id: "main", label: "主菜", icon: "🥩" },
     { id: "side", label: "副菜", icon: "🥗" },
@@ -222,7 +223,7 @@ export default function RecipesPage() {
             currentRecipes.map((recipe, idx) => (
               <article key={idx} className="premium-card p-8 relative overflow-hidden transition-all">
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {recipe.tags.map(tag => (
+                  {(recipe.tags ?? []).map(tag => (
                     <span key={tag} className="bg-orange-50 text-accent text-[9px] font-black px-2.5 py-1 rounded-full border border-accent/10 tracking-wider">
                       {tag}
                     </span>
@@ -232,7 +233,7 @@ export default function RecipesPage() {
                 <p className="text-xs text-gray-400 mb-6 leading-relaxed font-medium">{recipe.description}</p>
                 <div className="bg-white/50 rounded-[1.6rem] p-6 mb-8 border border-white/80">
                   <ol className="space-y-4">
-                    {recipe.steps.map((step, sIdx) => (
+                    {(recipe.steps ?? []).map((step, sIdx) => (
                       <li key={sIdx} className="flex gap-4">
                         <span className="flex-none w-5 h-5 rounded-full bg-accent text-white flex items-center justify-center text-[9px] font-black shadow-lg shadow-accent/20">{sIdx + 1}</span>
                         <p className="text-[12px] text-gray-800 font-bold leading-snug">{step}</p>
@@ -259,7 +260,7 @@ export default function RecipesPage() {
                 <footer className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span className="text-[8px] font-black text-gray-300 uppercase tracking-widest">食材:</span>
-                    <p className="text-[8px] text-gray-300 font-black truncate max-w-[150px]">{recipe.usedIngredientNames.join(" / ")}</p>
+                    <p className="text-[8px] text-gray-300 font-black truncate max-w-[150px]">{(recipe.usedIngredientNames ?? []).join(" / ")}</p>
                   </div>
                   {savingsInfo && (
                     <div className="receipt-stamp flex flex-col items-center leading-none py-1">
