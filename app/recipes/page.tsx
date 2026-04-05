@@ -246,12 +246,12 @@ export default function RecipesPage() {
 
                 <div className="mb-6 space-y-3">
                   <div className="flex flex-wrap gap-1.5">
-                    {recipe.ingredients_used.map(ing => (
+                    {(recipe.ingredients_used ?? []).map(ing => (
                       <span key={ing} className="text-[9px] font-black text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">
                         {ing}
                       </span>
                     ))}
-                    {recipe.seasonings_used.map(sea => (
+                    {(recipe.seasonings_used ?? []).map(sea => (
                       <span key={sea} className="text-[9px] font-black text-gray-400 border border-gray-100 px-2 py-0.5 rounded-md">
                         {sea}
                       </span>
@@ -260,7 +260,7 @@ export default function RecipesPage() {
                 </div>
 
                 <ol className="space-y-4 mb-8">
-                  {recipe.steps.map((step, sIdx) => (
+                  {(recipe.steps ?? []).map((step, sIdx) => (
                     <li key={sIdx} className="flex gap-4 group">
                       <span className="flex-none w-6 h-6 rounded-full bg-gray-100 text-[10px] font-black flex items-center justify-center text-gray-400 group-hover:bg-accent/10 group-hover:text-accent transition-colors">
                         {sIdx + 1}
