@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useFridgeStore } from "@/store/fridgeStore";
 import Image from "next/image";
+import { useHasHydrated } from "@/lib/useHasHydrated";
 
 function TotalSavingsDisplay() {
   const { totalSavings } = useFridgeStore();
@@ -10,10 +11,9 @@ function TotalSavingsDisplay() {
 
   return (
     <div className="bg-accent/5 border border-accent/20 px-4 py-3 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-500">
-      <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-xl">💰</div>
+      <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-xl shadow-inner-soft">💰</div>
       <div className="text-left">
-        <p className="text-[10px] font-black text-accent uppercase tracking-widest">Asset Defended</p>
-        <p className="text-sm font-black text-gray-900">累計節約額：<span className="text-lg">¥{totalSavings.toLocaleString()}</span></p>
+        <p className="text-sm font-black text-gray-900 leading-tight">累計節約額：<span className="text-lg">¥{totalSavings.toLocaleString()}</span></p>
       </div>
     </div>
   );
@@ -24,11 +24,11 @@ function HPGauge() {
     <div className="flex flex-col items-end gap-1 scale-75 origin-right">
       <div className="flex items-center gap-2">
         <span className="text-[10px] font-black text-red-500 animate-pulse">HP 1 / 100</span>
-        <div className="w-32 h-3 bg-gray-200 rounded-full overflow-hidden border border-gray-300">
+        <div className="w-32 h-2.5 bg-gray-200 rounded-full overflow-hidden border border-gray-300 shadow-inner">
           <div className="w-[1%] h-full bg-red-500 animate-pulse" />
         </div>
       </div>
-      <p className="text-[8px] font-black text-gray-400 uppercase tracking-tighter italic">Critical Condition</p>
+      <p className="text-[8px] font-black text-gray-400 uppercase tracking-tighter italic opacity-60">Critical Condition</p>
     </div>
   );
 }
@@ -54,6 +54,9 @@ function BackgroundMonologues() {
 
 export default function LandingPage() {
   const router = useRouter();
+  const hasHydrated = useHasHydrated();
+
+  if (!hasHydrated) return null;
 
   return (
     <div className="min-h-screen flex flex-col items-center max-w-lg mx-auto px-6 py-12 space-y-16 relative bg-background/50">
@@ -68,21 +71,25 @@ export default function LandingPage() {
       {/* ヒーローセクション */}
       <section className="text-center space-y-8 pt-4 z-10">
         <div className="relative inline-block">
-          <div className="relative w-48 h-48 mx-auto grayscale-[0.3] hover:grayscale-0 transition-all duration-700">
+          <div className="relative w-48 h-48 mx-auto grayscale-[0.3] hover:grayscale-0 transition-all duration-700 mix-blend-multiply">
             <Image 
               src="/futon-person.png" 
               alt="Genkai Person" 
               fill
               className="object-contain drop-shadow-xl"
+              priority
             />
           </div>
-          <div className="absolute -top-4 -right-4 bg-accent text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg rotate-12">HELP ME</div>
+          <div className="absolute -top-4 -right-4 bg-accent text-white text-[12px] font-black px-4 py-1.5 rounded-full shadow-lg rotate-12 animate-bounce">
+            たすけて
+          </div>
         </div>
         
         <div className="space-y-4">
           <h1 className="text-4xl font-black text-gray-900 tracking-tighter flex flex-col items-center leading-tight">
             <span className="text-sm font-bold text-gray-400 mb-2">もう、一歩も外に出たくない夜の。</span>
-            <span>冷蔵庫を撮るだけ、<span className="text-accent underline decoration-4 underline-offset-4 decoration-accent/30">限界自炊</span>。</span>
+            <span>冷蔵庫を撮るだけ、</span>
+            <span className="text-accent">限界自炊。</span>
           </h1>
           <p className="text-xs font-bold text-gray-500 leading-relaxed max-w-[280px] mx-auto italic">
             HP残り1。それでも「外食は高いしな...」と<br/>
@@ -108,8 +115,7 @@ export default function LandingPage() {
       {/* コンセプトセクション */}
       <section className="w-full space-y-6 z-10">
         <div className="premium-card p-8 space-y-8 bg-white/70 backdrop-blur-md">
-          <div className="space-y-2">
-            <h2 className="text-xs font-black text-accent uppercase tracking-widest">Our Relief</h2>
+          <div className="space-y-2 text-center">
             <p className="text-xl font-black text-gray-800 leading-tight">
               あなたの「限界」に、<br/>AIがそっと寄り添う。
             </p>

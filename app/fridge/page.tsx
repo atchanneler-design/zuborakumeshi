@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useFridgeStore } from "@/store/fridgeStore";
 import { resizeImage } from "@/lib/resizeImage";
 import { getDefaultUnit, QUANTITY_OPTIONS } from "@/lib/ingredientUtils";
+import { useHasHydrated } from "@/lib/useHasHydrated";
 import type { Ingredient, ServingSize } from "@/lib/types";
 
 const CATEGORIES = [
@@ -35,6 +36,7 @@ function FridgeBackgroundMonologues() {
 
 export default function FridgePage() {
   const router = useRouter();
+  const hasHydrated = useHasHydrated();
   const fileRef = useRef<HTMLInputElement>(null);
   const [scanning, setScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState({ current: 0, total: 0 });
@@ -123,6 +125,8 @@ export default function FridgePage() {
   }
 
 
+  if (!hasHydrated) return null;
+
   return (
     <div className="min-h-screen bg-background text-foreground max-w-lg mx-auto relative overflow-x-hidden pb-32">
       {/* ヘッダー */}
@@ -139,7 +143,7 @@ export default function FridgePage() {
               ズボラクめし
             </h1>
             <p className="text-[9px] font-black text-accent/60 uppercase tracking-widest">
-              Fridge Inventory
+              冷蔵庫の在庫
             </p>
           </div>
         </div>

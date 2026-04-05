@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { useFridgeStore } from "@/store/fridgeStore";
 import type { RecipeResponse } from "@/lib/types";
 import { getRandomComparison } from "@/lib/savingsUtils";
+import { useHasHydrated } from "@/lib/useHasHydrated";
 
 export default function RecipesPage() {
   const router = useRouter();
+  const hasHydrated = useHasHydrated();
   const { ingredients, servingSize, seasonings, dishTypes, addSavings } = useFridgeStore();
   const [recipeData, setRecipeData] = useState<RecipeResponse | null>(null);
   const [savingsInfo, setSavingsInfo] = useState<{ target: string; savings: number; message: string } | null>(null);
@@ -153,6 +155,8 @@ export default function RecipesPage() {
   };
   const nextTab = nextTabMap[activeTab];
 
+  if (!hasHydrated) return null;
+
   return (
     <div className="min-h-screen bg-background max-w-lg mx-auto pb-40 flex flex-col">
       <header className="sticky top-0 bg-background/90 backdrop-blur-md z-40 px-6 py-8 space-y-6">
@@ -161,7 +165,7 @@ export default function RecipesPage() {
             <button onClick={() => router.push("/")} className="w-10 h-10 rounded-full bg-white border border-border flex items-center justify-center text-gray-400 shadow-sm active:scale-90 transition-transform">←</button>
             <div>
               <h1 className="text-xl font-black text-gray-900 tracking-tighter italic cursor-pointer" onClick={() => router.push("/")}>ズボラクめし</h1>
-              <p className="text-[9px] font-black text-accent/60 uppercase tracking-widest">AI Proposals</p>
+              <p className="text-[9px] font-black text-accent/60 uppercase tracking-widest">AIの提案結果</p>
             </div>
           </div>
           {recipeData?.remaining !== undefined && (
@@ -185,7 +189,7 @@ export default function RecipesPage() {
       <main className="px-6 flex-1 space-y-10">
         <div className="px-1 text-center">
           <h2 className="text-2xl font-black text-gray-900 mb-1">{tabs.find(t => t.id === activeTab)?.label}の提案</h2>
-          <p className="text-[10px] font-medium text-gray-400 uppercase tracking-[0.2em] italic">Zubora recipes for {activeTab}</p>
+          <p className="text-[10px] font-medium text-gray-400 uppercase tracking-[0.2em] italic">{tabs.find(t => t.id === activeTab)?.label}のズボラレシピ</p>
         </div>
         <div className="space-y-8">
           {currentRecipes.length === 0 ? (
@@ -235,9 +239,8 @@ export default function RecipesPage() {
                   </div>
                   {savingsInfo && (
                     <div className="receipt-stamp flex flex-col items-center leading-none py-1">
-                      <span className="text-[7px]">Asset Defended</span>
                       <span className="text-[10px] whitespace-nowrap">+{savingsInfo.savings.toLocaleString()}円</span>
-                      <span className="text-[6px] opacity-70 mt-0.5">vs {savingsInfo.target.split("（")[0]}</span>
+                      <span className="text-[6px] opacity-70 mt-0.5">{savingsInfo.target.split("（")[0]}との差</span>
                     </div>
                   )}
                 </footer>
