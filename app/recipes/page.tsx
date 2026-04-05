@@ -61,8 +61,12 @@ export default function RecipesPage() {
     }
   }
 
-  function openXShare() {
-    const text = encodeURIComponent("ズボラクめしで献立を決めてる🍳\n冷蔵庫をパシャっと撮るだけで爆速レシピ提案！\n#ズボラクめし #時短料理");
+  function openXShare(recipeTitle?: string) {
+    const shareText = recipeTitle 
+      ? `ズボラクめしで「${recipeTitle}」を提案してもらったよ！🍳\n冷蔵庫をパシャっと撮るだけで爆速レシピ提案！`
+      : "ズボラクめしで献立を決めてる🍳\n冷蔵庫をパシャっと撮るだけで爆速レシピ提案！";
+    
+    const text = encodeURIComponent(`${shareText}\n#ズボラクめし #時短料理`);
     const url = encodeURIComponent(window.location.origin);
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, "_blank");
   }
@@ -90,7 +94,7 @@ export default function RecipesPage() {
         {!bonusGranted ? (
           <div className="w-full max-w-xs space-y-3">
             <button
-              onClick={openXShare}
+              onClick={() => openXShare()}
               className="w-full bg-black text-white font-black py-4 rounded-2xl shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all"
             >
               <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.738l7.737-8.84L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
@@ -201,9 +205,22 @@ export default function RecipesPage() {
                     ))}
                   </ol>
                 </div>
-                <a href={`https://www.google.com/search?q=${encodeURIComponent(recipe.searchLinks[0]?.query || recipe.title + " レシピ")}`} target="_blank" rel="noopener noreferrer" className="w-full text-center bg-white border border-border text-gray-900 font-black text-[11px] py-4 rounded-2xl active:bg-gray-50 transition-all shadow-sm flex items-center justify-center gap-2">
-                  Webで検索 <span>→</span>
-                </a>
+                <div className="flex gap-2">
+                  <a 
+                    href={`https://www.google.com/search?q=${encodeURIComponent(recipe.searchLinks[0]?.query || recipe.title + " レシピ")}`} 
+                    target="_blank" rel="noopener noreferrer" 
+                    className="flex-1 text-center bg-white border border-border text-gray-900 font-black text-[11px] py-4 rounded-2xl active:bg-gray-50 transition-all shadow-sm flex items-center justify-center gap-2"
+                  >
+                    Webで検索 <span>→</span>
+                  </a>
+                  <button 
+                    onClick={() => openXShare(recipe.title)}
+                    className="flex-none bg-black text-white px-5 rounded-2xl active:scale-95 transition-all shadow-sm flex items-center justify-center"
+                    title="Xにシェア"
+                  >
+                    <svg className="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.738l7.737-8.84L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  </button>
+                </div>
                 <footer className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-center gap-2">
                   <span className="text-[8px] font-black text-gray-300 uppercase tracking-widest">食材:</span>
                   <p className="text-[8px] text-gray-300 font-black truncate max-w-[200px]">{recipe.usedIngredientNames.join(" / ")}</p>
