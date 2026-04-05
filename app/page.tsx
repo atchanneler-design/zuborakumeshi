@@ -99,8 +99,8 @@ export default function LandingPage() {
             <span className="text-2xl">📸</span>
             <span>とりあえず冷蔵庫を撮る</span>
           </button>
-          <p className="mt-4 text-[10px] font-black text-gray-300 uppercase tracking-widest">
-            Brain Dead • Survival • Zero Decision Cost
+          <p className="mt-4 text-[10px] font-black text-gray-300 uppercase tracking-[0.2em]">
+            判断力ゼロ ・ 生存優先 ・ 買い物放棄
           </p>
         </div>
       </section>

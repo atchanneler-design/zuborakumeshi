@@ -17,10 +17,21 @@ const CATEGORIES = [
 ] as const;
 
 const DISH_MENU = [
-  { id: "main", label: "主菜", icon: "🥩" },
-  { id: "side", label: "副菜", icon: "🥗" },
-  { id: "soup", label: "汁物", icon: "🥣" },
+  { id: "main", label: "主菜", icon: "🥩", praise: null },
+  { id: "side", label: "副菜", icon: "🥗", praise: "徳が高すぎる" },
+  { id: "soup", label: "汁物", icon: "🥣", praise: "人間国宝かよ" },
 ] as const;
+
+function FridgeBackgroundMonologues() {
+  return (
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none opacity-[0.02] flex flex-col justify-around items-center h-screen py-20">
+      <div className="text-5xl font-black -rotate-6 whitespace-nowrap">もう、これでいいじゃん。</div>
+      <div className="text-6xl font-black rotate-3 whitespace-nowrap text-accent">腐る前に、救え。</div>
+      <div className="text-4xl font-black -rotate-12 whitespace-nowrap">外食は、負け。</div>
+      <div className="text-5xl font-black rotate-12 whitespace-nowrap text-accent">自炊、えらすぎ。</div>
+    </div>
+  );
+}
 
 export default function FridgePage() {
   const router = useRouter();
@@ -137,7 +148,7 @@ export default function FridgePage() {
           className="bg-white px-4 py-2 rounded-full shadow-sm border border-border text-[10px] font-black active:scale-90 transition-transform flex items-center gap-1.5"
         >
           <span>🧂</span>
-          <span>調味料</span>
+          <span>調味料ある？</span>
         </button>
       </header>
 
@@ -213,20 +224,28 @@ export default function FridgePage() {
             <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">作るものを選ぶ</h2>
           </div>
           <div className="flex gap-2">
-            {DISH_MENU.map((m) => (
-              <button
-                key={m.id}
-                onClick={() => toggleDishType(m.id)}
-                className={`flex-1 py-3.5 rounded-2xl border transition-all flex flex-col items-center gap-1 active:scale-95 ${
-                  dishTypes.includes(m.id)
-                    ? "bg-accent border-accent text-white shadow-lg shadow-accent/20"
-                    : "bg-white border-border text-gray-400"
-                }`}
-              >
-                <span className="text-xl">{m.icon}</span>
-                <span className="text-[10px] font-black">{m.label}</span>
-              </button>
-            ))}
+            {DISH_MENU.map((m) => {
+              const isActive = dishTypes.includes(m.id);
+              return (
+                <button
+                  key={m.id}
+                  onClick={() => toggleDishType(m.id)}
+                  className={`flex-1 py-3.5 rounded-2xl border transition-all flex flex-col items-center gap-1 active:scale-95 relative overflow-hidden ${
+                    isActive
+                      ? "bg-accent border-accent text-white shadow-lg shadow-accent/20"
+                      : "bg-white border-border text-gray-400"
+                  }`}
+                >
+                  <span className="text-xl">{m.icon}</span>
+                  <span className="text-[10px] font-black">{m.label}</span>
+                  {isActive && m.praise && (
+                    <div className="absolute -top-1 -right-1 bg-yellow-400 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full shadow-sm rotate-12 animate-bounce">
+                      {m.praise}
+                    </div>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </section>
 
@@ -260,7 +279,9 @@ export default function FridgePage() {
           <div className="flex items-center justify-between px-2">
             <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest text-[10px]">在庫食材</h2>
             {ingredients.length > 0 && (
-              <span className="text-[9px] font-black text-accent bg-accent/5 px-2 py-0.5 rounded-full border border-accent/10">🔥 消費優先</span>
+              <span className="text-[8px] font-black text-accent bg-accent/5 px-2 py-0.5 rounded-full border border-accent/10 italic">
+                ✨ 救済（たすけて！）モード
+              </span>
             )}
           </div>
 
@@ -281,8 +302,9 @@ export default function FridgePage() {
                   <button
                     onClick={() => togglePriority(item.id)}
                     className={`text-lg transition-all active:scale-125 ${item.priority ? "filter-none opacity-100" : "grayscale opacity-10 font-bold"}`}
+                    title={item.priority ? "救助中" : "救助が必要"}
                   >
-                    🔥
+                    🆘
                   </button>
                   <input
                     className="flex-1 text-sm font-black bg-transparent outline-none min-w-0 text-gray-800"
@@ -305,9 +327,10 @@ export default function FridgePage() {
                   </div>
                   <button
                     onClick={() => removeIngredient(item.id)}
-                    className="text-gray-200 hover:text-red-400 transition-colors pl-1"
+                    className="text-gray-300 hover:text-red-400 transition-colors p-2 -mr-1"
+                    title="そんなもの、うちにはない"
                   >
-                    ✕
+                    <span className="text-lg">✕</span>
                   </button>
                 </li>
               ))}
@@ -422,11 +445,12 @@ export default function FridgePage() {
             onClick={() => router.push("/recipes")}
             className="w-full bg-accent text-white font-black py-5 rounded-[2rem] text-base shadow-2xl shadow-accent/30 active:scale-[0.98] transition-all pointer-events-auto flex items-center justify-center gap-2"
           >
-            <span>🍳</span>
-            <span>ズボラクレシピを考える</span>
+            <span className="text-2xl animate-spin-slow">🔮</span>
+            <span>AIに丸投げして、錬成する</span>
           </button>
         </div>
       )}
+      <FridgeBackgroundMonologues />
     </div>
   );
 }

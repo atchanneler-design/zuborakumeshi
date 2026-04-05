@@ -35,9 +35,7 @@ export const DEFAULT_UNITS: Record<string, string> = {
 };
 
 export const QUANTITY_OPTIONS = [
-  "1", "2", "3", "4", "5", "6", "8", "10",
-  "50", "100", "150", "200", "250", "300", "400", "500", "750", "1000",
-  "少々", "適量", "半分", "1/4", "1/3"
+  "少量", "適量", "大量"
 ];
 
 export function getDefaultUnit(name: string): string {
