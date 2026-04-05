@@ -41,7 +41,7 @@ export default function RecipesPage() {
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, [ingredients, servingSize, seasonings, dishTypes]);
+  }, [ingredients, servingSize, seasonings, dishTypes, addSavings]);
 
   useEffect(() => {
     if (ingredients.length === 0) { router.replace("/fridge"); return; }

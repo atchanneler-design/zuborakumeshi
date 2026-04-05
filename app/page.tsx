@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useFridgeStore } from "@/store/fridgeStore";
-import Image from "next/image";
 import { useHasHydrated } from "@/lib/useHasHydrated";
 
 function TotalSavingsDisplay() {
@@ -28,7 +27,6 @@ function HPGauge() {
           <div className="w-[1%] h-full bg-red-500 animate-pulse" />
         </div>
       </div>
-      <p className="text-[8px] font-black text-red-400 uppercase tracking-widest italic animate-pulse">限界状態</p>
     </div>
   );
 }
@@ -72,12 +70,11 @@ export default function LandingPage() {
       <section className="text-center space-y-8 pt-4 z-10">
         <div className="relative inline-block">
           <div className="relative w-48 h-48 mx-auto grayscale-[0.3] hover:grayscale-0 transition-all duration-700">
-            <Image 
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
               src="/futon-person.png" 
               alt="Genkai Person" 
-              fill
-              className="object-contain mix-blend-multiply"
-              priority
+              className="w-full h-full object-contain mix-blend-multiply"
             />
           </div>
           <div className="absolute -top-4 -right-4 bg-accent text-white text-[12px] font-black px-4 py-1.5 rounded-full shadow-lg rotate-12 animate-bounce">
