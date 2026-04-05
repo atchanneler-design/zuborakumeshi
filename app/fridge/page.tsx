@@ -67,7 +67,7 @@ export default function FridgePage() {
     setScanProgress({ current: 0, total: pendingImages.length });
     setError("");
     
-    let allNewItems: Ingredient[] = [];
+    const allNewItems: Ingredient[] = [];
 
     try {
       for (let i = 0; i < pendingImages.length; i++) {
@@ -82,17 +82,23 @@ export default function FridgePage() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error ?? "解析失敗");
 
-        const items: Ingredient[] = data.ingredients.map(
-          (item: { name: string; amount?: number | string; unit?: string }) => ({
-            id: crypto.randomUUID(),
-            name: item.name,
-            amount: item.amount || 1,
-            unit: getDefaultUnit(item.name),
-            priority: false,
-          })
-        );
+        for (const item of data.ingredients) {
+          const trimmedName = item.name.trim();
+          // すでに存在するか名前でチェック（部分一致ではなく完全一致想定）
+          const exists = ingredients.some(existing => existing.name === trimmedName) || 
+                         allNewItems.some(newIt => newIt.name === trimmedName);
+          
+          if (!exists && trimmedName) {
+            allNewItems.push({
+              id: crypto.randomUUID(),
+              name: trimmedName,
+              amount: item.amount || 1,
+              unit: getDefaultUnit(trimmedName),
+              priority: false,
+            });
+          }
+        }
         
-        allNewItems = [...allNewItems, ...items];
         // 1枚ごとにリストを更新して反映させる
         setIngredients([...ingredients, ...allNewItems]);
       }
