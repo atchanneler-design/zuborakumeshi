@@ -243,9 +243,9 @@ export default function FridgePage() {
                   <span className="text-xl">{m.icon}</span>
                   <span className="text-[10px] font-black">{m.label}</span>
                   {isActive && m.praise && (
-                    <div className="absolute -top-1 -right-1 bg-yellow-400 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full shadow-sm rotate-12 animate-bounce">
+                    <span className="text-[8px] font-black text-red-500 animate-pulse mt-0.5">
                       {m.praise}
-                    </div>
+                    </span>
                   )}
                 </button>
               );
@@ -272,6 +272,9 @@ export default function FridgePage() {
               </button>
             ))}
           </div>
+          {servingSize === "多め" && (
+            <p className="text-center text-[10px] font-black text-red-500 animate-pulse mt-2">✨ えらすぎ！</p>
+          )}
         </section>
 
         {error && (
@@ -284,7 +287,7 @@ export default function FridgePage() {
             <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest text-[10px]">在庫食材</h2>
             {ingredients.length > 0 && (
               <span className="text-[8px] font-black text-accent bg-accent/5 px-2 py-0.5 rounded-full border border-accent/10 italic">
-                ✨ 救済（たすけて！）モード
+                ✨ 限界（腐りそう！）のため優先消費
               </span>
             )}
           </div>
@@ -305,10 +308,12 @@ export default function FridgePage() {
                 >
                   <button
                     onClick={() => togglePriority(item.id)}
-                    className={`text-lg transition-all active:scale-125 ${item.priority ? "filter-none opacity-100" : "grayscale opacity-10 font-bold"}`}
-                    title={item.priority ? "救助中" : "救助が必要"}
+                    className={`transition-all active:scale-125 ${item.priority ? "filter-none opacity-100" : "grayscale opacity-20"}`}
+                    title={item.priority ? "優先消費" : "通常"}
                   >
-                    🆘
+                    <div className="bg-accent text-white px-1.5 py-0.5 rounded-full text-[8px] font-black leading-none whitespace-nowrap">
+                      限界
+                    </div>
                   </button>
                   <input
                     className="flex-1 text-sm font-black bg-transparent outline-none min-w-0 text-gray-800"
