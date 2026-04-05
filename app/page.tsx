@@ -1,81 +1,147 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useFridgeStore } from "@/store/fridgeStore";
+import Image from "next/image";
+
+function TotalSavingsDisplay() {
+  const { totalSavings } = useFridgeStore();
+  if (totalSavings === 0) return null;
+
+  return (
+    <div className="bg-accent/5 border border-accent/20 px-4 py-3 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-500">
+      <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-xl">💰</div>
+      <div className="text-left">
+        <p className="text-[10px] font-black text-accent uppercase tracking-widest">Asset Defended</p>
+        <p className="text-sm font-black text-gray-900">累計節約額：<span className="text-lg">¥{totalSavings.toLocaleString()}</span></p>
+      </div>
+    </div>
+  );
+}
+
+function HPGauge() {
+  return (
+    <div className="flex flex-col items-end gap-1 scale-75 origin-right">
+      <div className="flex items-center gap-2">
+        <span className="text-[10px] font-black text-red-500 animate-pulse">HP 1 / 100</span>
+        <div className="w-32 h-3 bg-gray-200 rounded-full overflow-hidden border border-gray-300">
+          <div className="w-[1%] h-full bg-red-500 animate-pulse" />
+        </div>
+      </div>
+      <p className="text-[8px] font-black text-gray-400 uppercase tracking-tighter italic">Critical Condition</p>
+    </div>
+  );
+}
+
+function BackgroundMonologues() {
+  return (
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none opacity-[0.03]">
+      <div className="absolute top-[10%] -left-10 text-6xl font-black -rotate-12 whitespace-nowrap">
+        洗い物は、明日やる。 洗い物は、明日やる。
+      </div>
+      <div className="absolute top-[40%] -right-20 text-7xl font-black rotate-6 whitespace-nowrap text-accent">
+        コンビニすら、遠い。 コンビニすら、遠い。
+      </div>
+      <div className="absolute bottom-[20%] -left-5 text-5xl font-black -rotate-3 whitespace-nowrap">
+        もう、一歩も動けない。 もう、一歩も動けない。
+      </div>
+      <div className="absolute top-[70%] left-[20%] text-4xl font-black rotate-12 whitespace-nowrap text-accent">
+        脳死でOK。 脳死でOK。
+      </div>
+    </div>
+  );
+}
 
 export default function LandingPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen flex flex-col items-center max-w-lg mx-auto px-6 py-12 space-y-16">
+    <div className="min-h-screen flex flex-col items-center max-w-lg mx-auto px-6 py-12 space-y-16 relative bg-background/50">
+      <BackgroundMonologues />
+
+      {/* ヘッダー */}
+      <header className="w-full flex justify-between items-center z-10">
+        <div className="text-xl font-black text-gray-900 tracking-tighter italic">ズボラクめし</div>
+        <HPGauge />
+      </header>
+      
       {/* ヒーローセクション */}
-      <section className="text-center space-y-8 pt-8">
-        <div className="relative inline-block group">
-          <div className="text-7xl animate-bounce drop-shadow-2xl">🍳</div>
-          <div className="absolute -top-2 -right-2 bg-accent text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg">AI</div>
+      <section className="text-center space-y-8 pt-4 z-10">
+        <div className="relative inline-block">
+          <div className="relative w-48 h-48 mx-auto grayscale-[0.3] hover:grayscale-0 transition-all duration-700">
+            <Image 
+              src="/futon-person.png" 
+              alt="Genkai Person" 
+              fill
+              className="object-contain drop-shadow-xl"
+            />
+          </div>
+          <div className="absolute -top-4 -right-4 bg-accent text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg rotate-12">HELP ME</div>
         </div>
         
         <div className="space-y-4">
-          <h1 className="text-5xl font-black text-gray-900 tracking-tighter italic">
-            ズボラク<span className="text-accent underline decoration-4 underline-offset-4">めし</span>
+          <h1 className="text-4xl font-black text-gray-900 tracking-tighter flex flex-col items-center leading-tight">
+            <span className="text-sm font-bold text-gray-400 mb-2">もう、一歩も外に出たくない夜の。</span>
+            <span>冷蔵庫を撮るだけ、<span className="text-accent underline decoration-4 underline-offset-4 decoration-accent/30">限界自炊</span>。</span>
           </h1>
-          <p className="text-sm font-bold text-gray-500 leading-relaxed max-w-[280px] mx-auto">
-            冷蔵庫をパシャっと撮るだけ。<br/>
-            <span className="text-gray-900">「洗い物最小限 × 爆速手順」</span>な<br/>
-            最強のズボラ献立をAIが提案。
+          <p className="text-xs font-bold text-gray-500 leading-relaxed max-w-[280px] mx-auto italic">
+            HP残り1。それでも「外食は高いしな...」と<br/>
+            最後の力を振り絞って悩むあなたへ。
           </p>
         </div>
 
-        <div className="pt-4">
+        <div className="pt-4 flex flex-col items-center">
+          <TotalSavingsDisplay />
           <button
             onClick={() => router.push("/fridge")}
-            className="w-full bg-accent text-white font-black py-6 rounded-[2.5rem] text-lg shadow-2xl shadow-accent/40 active:scale-95 transition-all flex items-center justify-center gap-3"
+            className="w-full bg-accent text-white font-black py-6 rounded-[2.5rem] text-lg shadow-2xl shadow-accent/40 active:scale-95 transition-all flex items-center justify-center gap-3 mt-4"
           >
             <span className="text-2xl">📸</span>
-            <span>撮影して献立を決める</span>
+            <span>とりあえず冷蔵庫を撮る</span>
           </button>
           <p className="mt-4 text-[10px] font-black text-gray-300 uppercase tracking-widest">
-            No shopping needed • Snap & Decide
+            Brain Dead • Survival • Zero Decision Cost
           </p>
         </div>
       </section>
 
       {/* コンセプトセクション */}
-      <section className="w-full space-y-6">
-        <div className="premium-card p-8 space-y-8">
+      <section className="w-full space-y-6 z-10">
+        <div className="premium-card p-8 space-y-8 bg-white/70 backdrop-blur-md">
           <div className="space-y-2">
-            <h2 className="text-xs font-black text-accent uppercase tracking-widest">Concept</h2>
+            <h2 className="text-xs font-black text-accent uppercase tracking-widest">Our Relief</h2>
             <p className="text-xl font-black text-gray-800 leading-tight">
-              自炊の「面倒」を、<br/>AIがすべて肩代わり。
+              あなたの「限界」に、<br/>AIがそっと寄り添う。
             </p>
           </div>
 
-          <div className="grid gap-6">
-            <div className="flex gap-4">
-              <div className="flex-none w-10 h-10 rounded-2xl bg-orange-50 flex items-center justify-center text-xl">🧼</div>
+          <div className="grid gap-8">
+            <div className="flex gap-4 group">
+              <div className="flex-none w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🧼</div>
               <div className="space-y-1">
-                <h3 className="text-sm font-black text-gray-800">洗い物を極限まで減らす</h3>
+                <h3 className="text-base font-black text-gray-800 italic">洗い物は、明日やりな。</h3>
                 <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
-                  ボウル1つ、レンジのみ、フライパンそのまま。AIが洗い物の少なさを計算して提案します。
+                  フライパンのまま、レンジのみ。洗い物を増やさないことを最優先にした「逃げ道」を提案します。
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-4">
-              <div className="flex-none w-10 h-10 rounded-2xl bg-orange-50 flex items-center justify-center text-xl">⚡</div>
+            <div className="flex gap-4 group">
+              <div className="flex-none w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">⚡</div>
               <div className="space-y-1">
-                <h3 className="text-sm font-black text-gray-800">買い物には行かない</h3>
+                <h3 className="text-base font-black text-gray-800 italic">コンビニすら、遠い。</h3>
                 <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
-                  冷蔵庫の「今あるもの」と「基本の調味料」だけで作れる。追加の買い出しは不要です。
+                  今、目の前にある「余り物」だけで成立するレシピを。玄関のドアを開ける気力すら不要です。
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-4">
-              <div className="flex-none w-10 h-10 rounded-2xl bg-orange-50 flex items-center justify-center text-xl">🧠</div>
+            <div className="flex gap-4 group">
+              <div className="flex-none w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🧠</div>
               <div className="space-y-1">
-                <h3 className="text-sm font-black text-gray-800">献立に迷わない</h3>
+                <h3 className="text-base font-black text-gray-800 italic">脳死でOK。</h3>
                 <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
-                  写真はまとめて撮影OK。AIが食材を瞬時に解析し、あなたに最適な組み合わせを選びます。
+                  写真はまとめて撮るだけ。献立を考えるという「最後のひと絞り」をAIが肩代わりします。
                 </p>
               </div>
             </div>
@@ -83,16 +149,16 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* SEO/Footer セクション */}
-      <footer className="w-full pb-12 text-center space-y-6 opacity-30">
+      {/* Footer セクション */}
+      <footer className="w-full pb-12 text-center space-y-6 opacity-30 z-10">
         <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent w-full" />
         <div className="space-y-2">
           <p className="text-[10px] font-bold text-gray-400">
-            ズボラクめし - 冷蔵庫解析型 献立提案AIツール
+            ズボラクめし - 限界社会人のためのサバイバルツール
           </p>
           <p className="text-[9px] text-gray-400 leading-relaxed px-4">
-            AIが冷蔵庫の写真を解析し、洗い物が少なく、調理が極めて簡単なレシピを提案します。
-            一人暮らし、共働き、忙しいズボラなあなたの自炊を全力でサポート。
+            冷蔵庫の中身を解析し、最小限の工数で最大級の「救済」を。<br/>
+            私たちは、戦い疲れたあなたの自炊を、一歩も動かずに応援します。
           </p>
         </div>
       </footer>

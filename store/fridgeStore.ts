@@ -16,6 +16,7 @@ type FridgeStore = {
   servingSize: ServingSize;
   dishTypes: DishType[];
   seasonings: Seasoning[];
+  totalSavings: number;
   setIngredients: (items: Ingredient[]) => void;
   setServingSize: (size: ServingSize) => void;
   toggleDishType: (type: DishType) => void;
@@ -25,6 +26,7 @@ type FridgeStore = {
   updateIngredient: (id: string, patch: Partial<Omit<Ingredient, "id">>) => void;
   removeIngredient: (id: string) => void;
   togglePriority: (id: string) => void;
+  addSavings: (amount: number) => void;
 };
 
 export const useFridgeStore = create<FridgeStore>()(
@@ -34,6 +36,7 @@ export const useFridgeStore = create<FridgeStore>()(
       servingSize: "標準",
       dishTypes: ["main"],
       seasonings: DEFAULT_SEASONINGS,
+      totalSavings: 0,
 
       setIngredients: (items) => set({ ingredients: items }),
       setServingSize: (size) => set({ servingSize: size }),
@@ -78,6 +81,8 @@ export const useFridgeStore = create<FridgeStore>()(
             i.id === id ? { ...i, priority: !i.priority } : i
           ),
         })),
+
+      addSavings: (amount) => set((s) => ({ totalSavings: s.totalSavings + amount })),
     }),
     { name: "zuborakumeshi-fridge" }
   )

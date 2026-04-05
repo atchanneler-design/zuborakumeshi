@@ -1,4 +1,4 @@
-export type ServingSize = "少なめ" | "標準" | "2人前" | "3〜4人" | "ﾊﾟｰﾃｨ";
+export type ServingSize = "標準" | "多め";
 
 export type Seasoning = {
   id: string;
@@ -21,6 +21,8 @@ export type Recipe = {
   usedIngredientNames: string[];
   tags: string[];
   searchLinks: { label: string; query: string }[];
+  savingsAmount?: number;
+  comparisonTarget?: string;
 };
 
 export type RecipeResponse = {

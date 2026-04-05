@@ -4,11 +4,13 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFridgeStore } from "@/store/fridgeStore";
 import type { RecipeResponse } from "@/lib/types";
+import { getRandomComparison } from "@/lib/savingsUtils";
 
 export default function RecipesPage() {
   const router = useRouter();
-  const { ingredients, servingSize, seasonings, dishTypes } = useFridgeStore();
+  const { ingredients, servingSize, seasonings, dishTypes, addSavings } = useFridgeStore();
   const [recipeData, setRecipeData] = useState<RecipeResponse | null>(null);
+  const [savingsInfo, setSavingsInfo] = useState<{ target: string; savings: number; message: string } | null>(null);
   const [activeTab, setActiveTab] = useState<"main" | "side" | "soup">("main");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -29,6 +31,11 @@ export default function RecipesPage() {
         if (r.status === 429) { setRateLimited(true); return; }
         const data: RecipeResponse = await r.json();
         setRecipeData(data);
+        
+        // 節約額の計算と記録
+        const info = getRandomComparison(servingSize);
+        setSavingsInfo(info);
+        addSavings(info.savings);
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -63,10 +70,10 @@ export default function RecipesPage() {
 
   function openXShare(recipeTitle?: string) {
     const shareText = recipeTitle 
-      ? `ズボラクめしで「${recipeTitle}」を提案してもらったよ！🍳\n冷蔵庫をパシャっと撮るだけで爆速レシピ提案！`
-      : "ズボラクめしで献立を決めてる🍳\n冷蔵庫をパシャっと撮るだけで爆速レシピ提案！";
+      ? `【限界自炊レポ】\n「${recipeTitle}」を作成！\n💰 ${savingsInfo?.target}との差額：+${savingsInfo?.savings.toLocaleString()}円\n今夜の私は叙々苑に行かなかったことで1万円稼いだも同然です。`
+      : "ズボラクめしで資産防衛中！🍳\n冷蔵庫を撮るだけで爆速レシピ提案！";
     
-    const text = encodeURIComponent(`${shareText}\n#ズボラクめし #時短料理`);
+    const text = encodeURIComponent(`${shareText}\n#ズボラクめし #限界社会人 #実質黒字`);
     const url = encodeURIComponent(window.location.origin);
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, "_blank");
   }
@@ -221,9 +228,18 @@ export default function RecipesPage() {
                     <svg className="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.738l7.737-8.84L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                   </button>
                 </div>
-                <footer className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-center gap-2">
-                  <span className="text-[8px] font-black text-gray-300 uppercase tracking-widest">食材:</span>
-                  <p className="text-[8px] text-gray-300 font-black truncate max-w-[200px]">{recipe.usedIngredientNames.join(" / ")}</p>
+                <footer className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[8px] font-black text-gray-300 uppercase tracking-widest">食材:</span>
+                    <p className="text-[8px] text-gray-300 font-black truncate max-w-[150px]">{recipe.usedIngredientNames.join(" / ")}</p>
+                  </div>
+                  {savingsInfo && (
+                    <div className="receipt-stamp flex flex-col items-center leading-none py-1">
+                      <span className="text-[7px]">Asset Defended</span>
+                      <span className="text-[10px] whitespace-nowrap">+{savingsInfo.savings.toLocaleString()}円</span>
+                      <span className="text-[6px] opacity-70 mt-0.5">vs {savingsInfo.target.split("（")[0]}</span>
+                    </div>
+                  )}
                 </footer>
               </article>
             ))

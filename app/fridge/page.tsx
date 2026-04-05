@@ -142,57 +142,18 @@ export default function FridgePage() {
       </header>
 
       <main className="px-6 space-y-10">
-        {/* 作るものを選ぶ */}
-        <section className="space-y-3">
-          <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">作るものを選ぶ</h2>
-          <div className="flex gap-2">
-            {DISH_MENU.map((m) => (
-              <button
-                key={m.id}
-                onClick={() => toggleDishType(m.id)}
-                className={`flex-1 py-3.5 rounded-2xl border transition-all flex flex-col items-center gap-1 active:scale-95 ${
-                  dishTypes.includes(m.id)
-                    ? "bg-accent border-accent text-white shadow-lg shadow-accent/20"
-                    : "bg-white border-border text-gray-400"
-                }`}
-              >
-                <span className="text-xl">{m.icon}</span>
-                <span className="text-[10px] font-black">{m.label}</span>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* ボリューム設定 */}
-        <section className="space-y-3">
-          <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">食べる量</h2>
-          <div className="flex bg-gray-100 p-1 rounded-2xl">
-            {["少なめ", "標準", "2人前", "3〜4人", "ﾊﾟｰﾃｨ"].map((size) => (
-              <button
-                key={size}
-                onClick={() => setServingSize(size as ServingSize)}
-                className={`flex-1 py-2 text-[11px] font-black rounded-xl transition-all ${
-                  servingSize === size ? "bg-white text-accent shadow-sm" : "text-gray-400"
-                }`}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        </section>
-
         {/* 撮影セクション */}
-        <section className="bg-white rounded-[2rem] p-6 soft-shadow border border-border">
+        <section className="bg-white rounded-[2rem] p-6 soft-shadow border border-border mt-4">
           <div className="flex items-center justify-between mb-5">
             <div className="space-y-1">
-              <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest text-[10px]">自動解析</h2>
-              <p className="text-[10px] text-gray-300 font-medium">冷蔵庫をまとめて撮影</p>
+              <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest text-[10px]">冷蔵庫スキャン</h2>
+              <p className="text-[10px] text-gray-300 font-medium italic">まとめて撮ってもAIが判別</p>
             </div>
             <button
               onClick={() => fileRef.current?.click()}
               className="bg-accent text-white px-6 py-2.5 rounded-full shadow-lg shadow-accent/20 active:scale-95 transition-all text-xs font-black flex items-center gap-2"
             >
-              <span>📷</span>
+              <span>📸</span>
               <span>撮影する</span>
             </button>
           </div>
@@ -244,6 +205,50 @@ export default function FridgePage() {
               e.target.value = "";
             }}
           />
+        </section>
+
+        {/* 作るものを選ぶ */}
+        <section className="space-y-3 font-sans">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">作るものを選ぶ</h2>
+          </div>
+          <div className="flex gap-2">
+            {DISH_MENU.map((m) => (
+              <button
+                key={m.id}
+                onClick={() => toggleDishType(m.id)}
+                className={`flex-1 py-3.5 rounded-2xl border transition-all flex flex-col items-center gap-1 active:scale-95 ${
+                  dishTypes.includes(m.id)
+                    ? "bg-accent border-accent text-white shadow-lg shadow-accent/20"
+                    : "bg-white border-border text-gray-400"
+                }`}
+              >
+                <span className="text-xl">{m.icon}</span>
+                <span className="text-[10px] font-black">{m.label}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* ボリューム設定 */}
+        <section className="space-y-3">
+          <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">食べる量</h2>
+          <div className="flex bg-gray-100 p-1 rounded-2xl gap-1">
+            {[
+              { id: "標準", label: "標準（1人前）" },
+              { id: "多め", label: "多め（お弁当分も）" },
+            ].map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => setServingSize(opt.id as ServingSize)}
+                className={`flex-1 py-3 text-[11px] font-black rounded-xl transition-all ${
+                  servingSize === opt.id ? "bg-white text-accent shadow-sm" : "text-gray-400"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </section>
 
         {error && (
