@@ -243,7 +243,7 @@ export default function RecipesPage() {
                 </div>
                 <div className="flex gap-2">
                   <a 
-                    href={`https://www.google.com/search?q=${encodeURIComponent(recipe.searchLinks[0]?.query || recipe.title + " レシピ")}`} 
+                    href={`https://www.google.com/search?q=${encodeURIComponent((recipe.searchLinks ?? [])[0]?.query || recipe.title + " レシピ")}`}
                     target="_blank" rel="noopener noreferrer" 
                     className="flex-1 text-center bg-white border border-border text-gray-900 font-black text-[11px] py-4 rounded-2xl active:bg-gray-50 transition-all shadow-sm flex items-center justify-center gap-2"
                   >
